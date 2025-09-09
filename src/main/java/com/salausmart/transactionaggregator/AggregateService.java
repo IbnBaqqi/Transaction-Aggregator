@@ -1,7 +1,10 @@
 package com.salausmart.transactionaggregator;
 
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
+
+import java.util.List;
 
 @Service
 public class AggregateService {
@@ -12,11 +15,12 @@ public class AggregateService {
         this.restClient = restClient;
     }
 
-    public String aggregate() {
+    public String aggregate(String account) {
 
-        return restClient.get()
-                .uri("http://localhost:8889/ping")
+        List<AccountResponseDto> accounts = restClient.get()
+                .uri("http://localhost:8889/transactions?account=" + account)
                 .retrieve()
-                .body(String.class);
+                .body(new ParameterizedTypeReference<>() {});
+        return null;
     }
 }

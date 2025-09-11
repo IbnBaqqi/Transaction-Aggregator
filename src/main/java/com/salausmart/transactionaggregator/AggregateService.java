@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class AggregateService {
@@ -18,7 +19,7 @@ public class AggregateService {
     public List<AccountResponseDto> aggregate(String account) {
 
         List<AccountResponseDto> accounts1 = restClient.get()
-                .uri("http://localhost:8889/transactions?account=" + account)
+                .uri("http://localhost:8888/transactions?account=" + account)
                 .retrieve()
                 .body(new ParameterizedTypeReference<>() {});
 
@@ -26,15 +27,15 @@ public class AggregateService {
                 .uri("http://localhost:8889/transactions?account=" + account)
                 .retrieve()
                 .body(new ParameterizedTypeReference<>() {});
-        var sortedAccount = sortAccounts(accounts1, accounts2);
-        return sortedAccount;
+
+        assert accounts1 != null;
+        return sortAccounts(accounts1, accounts2);
     }
 
     private List<AccountResponseDto> sortAccounts(List<AccountResponseDto> accounts1, List<AccountResponseDto> accounts2) {
         accounts1.addAll(accounts2);
 
 //        var grouped = accounts1.stream().collect(Collectors.groupingBy(account -> account.getTimestamp()));
-        var sorted = accounts1.stream().sorted(account -> account.getTimestamp())
-        return null;
+        return accounts1.stream().sorted().toList();
     }
 }

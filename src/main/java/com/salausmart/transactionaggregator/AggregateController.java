@@ -6,6 +6,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/aggregate")
 public class AggregateController {
@@ -17,8 +19,8 @@ public class AggregateController {
     }
 
     @GetMapping()
-    public ResponseEntity<String> aggregate(@RequestParam(name = "account") String account) {
+    public List<AccountResponseDto> aggregate(@RequestParam(name = "account") String account) {
         var response = aggregateService.aggregate(account);
-        return ResponseEntity.ok(response);
+        return response;
     }
 }

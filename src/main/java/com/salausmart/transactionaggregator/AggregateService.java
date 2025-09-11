@@ -4,7 +4,9 @@ import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
 
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Stream;
 
 @Service
 public class AggregateService {
@@ -35,7 +37,9 @@ public class AggregateService {
     }
 
     private List<AccountResponseDto> sortAccounts(List<AccountResponseDto> account1, List<AccountResponseDto> account2) {
-        account1.addAll(account2);
-        return account1.stream().sorted().toList();
+
+        return Stream.concat(account1.stream(), account2.stream())
+                .sorted(Comparator.comparing(AccountResponseDto::getTimestamp).reversed())
+                .toList();
     }
 }

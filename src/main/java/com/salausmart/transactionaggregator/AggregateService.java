@@ -6,7 +6,6 @@ import org.springframework.web.client.RestClient;
 
 import java.util.List;
 
-
 @Service
 public class AggregateService {
 
@@ -16,26 +15,27 @@ public class AggregateService {
         this.restClient = restClient;
     }
 
+    private final String accountUrl1 = "http://localhost:8888";
+    private final String accountUrl2 = "http://localhost:8889";
+
     public List<AccountResponseDto> aggregate(String account) {
 
-        List<AccountResponseDto> accounts1 = restClient.get()
-                .uri("http://localhost:8888/transactions?account=" + account)
-                .retrieve()
-                .body(new ParameterizedTypeReference<>() {});
+        final var accounts1 = getAccountResponse(accountUrl1, account);
+        final var accounts2 = getAccountResponse(accountUrl2, account);
 
-        List<AccountResponseDto> accounts2 = restClient.get()
-                .uri("http://localhost:8889/transactions?account=" + account)
-                .retrieve()
-                .body(new ParameterizedTypeReference<>() {});
-
-        assert accounts1 != null;
         return sortAccounts(accounts1, accounts2);
     }
 
-    private List<AccountResponseDto> sortAccounts(List<AccountResponseDto> accounts1, List<AccountResponseDto> accounts2) {
-        accounts1.addAll(accounts2);
+    private List<AccountResponseDto> getAccountResponse(String baseUrl, String account) {
+        return restClient.get()
+                .uri(baseUrl + "/transactions?account=" + account)
+                .retrieve()
+                .body(new ParameterizedTypeReference<>() {
+                });
+    }
 
-//        var grouped = accounts1.stream().collect(Collectors.groupingBy(account -> account.getTimestamp()));
-        return accounts1.stream().sorted().toList();
+    private List<AccountResponseDto> sortAccounts(List<AccountResponseDto> account1, List<AccountResponseDto> account2) {
+        account1.addAll(account2);
+        return account1.stream().sorted().toList();
     }
 }

@@ -1,10 +1,10 @@
 package com.salausmart.transactionaggregator;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 
-import java.time.Instant;
 import java.time.LocalDateTime;
-import java.time.OffsetDateTime;
+
 
 @Data
 public class AccountResponseDto implements Comparable<AccountResponseDto>{
@@ -12,7 +12,8 @@ public class AccountResponseDto implements Comparable<AccountResponseDto>{
     private String serverId;
     private String account;
     private String amount;
-    private OffsetDateTime timestamp;
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSSSS")
+    private LocalDateTime timestamp;
 
     @Override
     public int compareTo(AccountResponseDto accountResponseDto) {

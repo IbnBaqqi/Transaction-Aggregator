@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Comparator;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Stream;
 
 @Service
@@ -22,12 +23,18 @@ public class AggregateService {
 
     public List<AccountResponseDto> aggregate(String account) {
 
-        final var accounts1 = accountClientService.getAccountResponse(accountUrl1, account);
-        final var accounts2 = accountClientService.getAccountResponse(accountUrl2, account);
+        CompletableFuture<List<AccountResponseDto>> futureAccount1 =
+                CompletableFuture.supplyAsync( () -> accountClientService.getAccountResponse(accountUrl1, account));
 
-        return sortAccounts(accounts1, accounts2);
+        CompletableFuture<List<AccountResponseDto>> futureAccount2 =
+                CompletableFuture.supplyAsync(() -> accountClientService.getAccountResponse(accountUrl2, account));
+
+//        var acc1 = futureAccount1.join();
+//        var acc2 = futureAccount2.join();
+//        return sortAccounts(acc1, acc2); //this didn't work because .join() also blocks
+
+        return futureAccount1.thenCombine(futureAccount2, this::sortAccounts).join();
     }
-
 
     public List<AccountResponseDto> sortAccounts(List<AccountResponseDto> account1, List<AccountResponseDto> account2) {
 
